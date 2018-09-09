@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
+import 'dart:math';
 
 void main() => runApp(new Artoblast());
 
@@ -24,19 +25,12 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
     super.initState();
 
     animationController =
-        AnimationController(duration: Duration(seconds: 5), vsync: this);
-    animation = Tween<Offset>(begin: const Offset(-0.5, -0.5), end: const Offset(0.5, 0.5)).animate(CurvedAnimation(
+        AnimationController(duration: Duration(seconds: 50), vsync: this);
+    animation = Tween<Offset>(begin: const Offset(1.23, 0.6), end: const Offset(9.23, 6.6)).animate(CurvedAnimation(
         parent: animationController, curve: Curves.linear));
 
-    animation.addStatusListener((AnimationStatus newStatus) {
-      if(newStatus == AnimationStatus.completed) {
-        animationController.reverse();
-      } else if (newStatus == AnimationStatus.dismissed) {
-        animationController.forward();
-      }
-    });
-
     animationController.forward();
+    animationController.repeat();
   }
 
   @override
@@ -49,7 +43,7 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
         builder: (BuildContext context, Widget child) {
           return Scaffold(
             body: Transform(
-              transform: Matrix4.translationValues((animation.value.dx) * width, animation.value.dy * height, 0.0),
+              transform: Matrix4.translationValues(getValue(animation.value.dx, width), getValue(animation.value.dy, height), 0.0),
               child: new Center(
                 child: Container(
                   // TODO on click, animationController.stop()
@@ -59,5 +53,17 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
             )
           );
         });
+  }
+
+  num getValue(num x, num y) {
+    num whole = x.floor();
+    num rest = x - whole;
+    if(whole % 2 == 0) {
+      // goind right or down
+      return (rest - 0.5) * y;
+    } else {
+      // goind left or up
+      return (- rest + 0.5) * y;
+    }
   }
 }
