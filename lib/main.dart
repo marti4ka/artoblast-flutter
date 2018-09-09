@@ -1,65 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
 
-void main() => runApp(new MaterialApp(
-      home: new HomePage(),
-      debugShowCheckedModeBanner: false,
-    ));
+void main() => runApp(new Artoblast());
 
-class HomePage extends StatefulWidget {
+class Artoblast extends StatelessWidget {
   @override
-  _HomePageState createState() => new _HomePageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(home: GameArea());
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  List<Offset> _points = <Offset>[];
+class GameArea extends StatefulWidget {
+  @override
+  GameState createState() => new GameState();
+}
+
+class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
+  Animation animation;
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController =
+        AnimationController(duration: Duration(seconds: 5), vsync: this);
+    animation = Tween<Offset>(begin: const Offset(-0.5, -0.5), end: const Offset(0.5, 0.5)).animate(CurvedAnimation(
+        parent: animationController, curve: Curves.linear));
+
+    animation.addStatusListener((AnimationStatus newStatus) {
+      if(newStatus == AnimationStatus.completed) {
+        animationController.reverse();
+      } else if (newStatus == AnimationStatus.dismissed) {
+        animationController.forward();
+      }
+    });
+
+    animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Container(
-        child: new GestureDetector(
-          onPanUpdate: (DragUpdateDetails details) {
-            setState(() {
-              RenderBox object = context.findRenderObject();
-              Offset _localPosition =
-                  object.globalToLocal(details.globalPosition);
-              _points = new List.from(_points)..add(_localPosition);
-            });
-          },
-          onPanEnd: (DragEndDetails details) => _points.add(null),
-          child: new CustomPaint(
-            painter: new Signature(points: _points),
-            size: Size.infinite,
-          ),
-        ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.clear),
-        onPressed: () => _points.clear(),
-      ),
-    );
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget child) {
+          return Scaffold(
+            body: Transform(
+              transform: Matrix4.translationValues((animation.value.dx) * width, animation.value.dy * height, 0.0),
+              child: new Center(
+                child: Container(
+                  // TODO on click, animationController.stop()
+                  child: Text('o', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))
+                )
+              )
+            )
+          );
+        });
   }
-}
-
-class Signature extends CustomPainter {
-  List<Offset> points;
-
-  Signature({this.points});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = new Paint()
-      ..color = Colors.blue
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 10.0;
-
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
 }
