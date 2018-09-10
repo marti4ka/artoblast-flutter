@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
-import 'dart:math';
 
 void main() => runApp(new Artoblast());
 
@@ -17,6 +16,8 @@ class GameArea extends StatefulWidget {
 }
 
 class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
+  // TODO this should have array of balls
+  // TODO each ball should have an animation and animationController
   Animation animation;
   AnimationController animationController;
 
@@ -35,6 +36,9 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    AppBar appBar = AppBar(title: Text('Artoblast'));
+    final double appBarHeight = appBar.preferredSize.height * 2;
+
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
@@ -42,13 +46,18 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
         animation: animationController,
         builder: (BuildContext context, Widget child) {
           return Scaffold(
+            appBar: appBar,
             body: Transform(
-              transform: Matrix4.translationValues(getValue(animation.value.dx, width), getValue(animation.value.dy, height), 0.0),
-              child: new Center(
+              transform: Matrix4.translationValues(
+                getValue(animation.value.dx, width - 10),
+                getValue(animation.value.dy, height - appBarHeight), 0.0),
+              child: new Center (
+                child: GestureDetector(
+                onTap: animationController.stop,
                 child: Container(
-                  // TODO on click, animationController.stop()
-                  child: Text('o', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))
+                  child: Text('o', style: TextStyle(fontSize: 50.0, fontFamily: 'VT323'))
                 )
+              )
               )
             )
           );

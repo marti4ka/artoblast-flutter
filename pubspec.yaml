@@ -18,3 +18,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+  - family: VT323
+    fonts: 
+    - asset: assets/fonts/VT323.ttf
