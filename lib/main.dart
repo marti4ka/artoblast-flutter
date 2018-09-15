@@ -33,8 +33,8 @@ class GameState extends State<GameArea> with SingleTickerProviderStateMixin {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Ball(Offset(1.23, 0.6), Offset(9.23, 6.6), 50),
-              Ball(Offset(1.0, 1.0), Offset(3.0, 3.0), 55),
+              Ball(Offset(1.23, 0.6), Offset(9.23, 6.6), 50, appBar.preferredSize.height),
+              Ball(Offset(1.0, 1.0), Offset(3.0, 3.0), 55, appBar.preferredSize.height),
             ],
           ),
         )
